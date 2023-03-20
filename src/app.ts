@@ -1,10 +1,40 @@
-// const btn = document.querySelector('button');
-const btn = document.querySelector('button')!;
-// 무엇이 존재하는지 확실하다면 '!' 를 붙여
-btn.addEventListener('click',()=>{
-  console.log('Clicked!');
-})
+class Department {
+  name:string;
+  private readonly id: string;
+  // readonly는 초기생성시에만 입력가능
+  private emplyees: string[] = [];
+  //생성자
+  constructor(id:string, n:string) {
+    this.id = id;
+    this.name = n;
+  }
 
-// 타입스크립트는 코드를 작성 시 반드시 브라우저를 위해 작성하는게 아니다.
-// 그럼 document객체는 어떻게 알 수 있을까?
-// 이것이 작동하는 것은 tsconfig 옵션 때문!
+  //메서드
+  describe(this:Department) {
+    console.log(`Department (${this.id}): ${this.name}`);
+  }
+  addEmployee(emplyees: string) {
+    this.emplyees.push(emplyees);
+  }
+
+  printEmployeeInformation() {
+    console.log(this.emplyees.length);
+    console.log(this.emplyees);
+  }
+
+}
+
+const appliedMusic = new Department('2093512','applied Music');
+appliedMusic.addEmployee('Minho');
+appliedMusic.addEmployee('YoungHoon');
+appliedMusic.describe();
+
+//private 메서드는 직접 접근할 수 없다.
+// appliedMusic.addEmployee[2] = 'TEST'
+
+// 함수 자체를 전달하지 않으면, 정의된 this객체가 존재하지 않으므로 'undifined' 가 뜬다.
+// const appliedMusicCopy = { describe : appliedMusic.describe }
+// appliedMusicCopy.describe();
+
+// const appliedMusicCopy = { name:"DUMMY", describe : appliedMusic.describe }
+// appliedMusicCopy.describe();
