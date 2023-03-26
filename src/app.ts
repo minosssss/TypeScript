@@ -1,107 +1,57 @@
-class Department {
+// type Addfn = (a:number, b:number) => {}
+interface Addfn {
+  (a:number, b:number): number;
+}
+let add: Addfn;
 
-  static fiscalYear = 2023;
-  //정적 속성과 정적 메서드의 전체적인 개념은 인스턴스와 분리되어 있다.
-
-  name:string;
-
-  private readonly id: string;
-  // readonly는 초기생성시에만 입력가능
-  // protected를 사용하면 해당 클래스를 상속받는 클래스에서도 사용이 가능하다. 
-  private emplyees: string[] = [];
-  //생성자
-  constructor(id:string, n:string) {
-    this.id = id;
-    this.name = n;
-
-    // 인스턴스와 분리 되어있는 정적 속성이기에, this가 아닌 클래스를 바라본다.
-    console.log(Department.fiscalYear);
-  }
-
-  //메서드
-  describe(this:Department) {
-    console.log(`Department (${this.id}): ${this.name}`);
-  }
-  addEmployee(emplyees: string) {
-    this.emplyees.push(emplyees);
-  }
-
-  printEmployeeInformation() {
-    console.log(this.emplyees.length);
-    console.log(this.emplyees);
-  }
-
-  static createEmployee(name: string) {
-    return {name:name};
-  }
-
+add = (n1: number, n2:number) => {
+  return n1 + n2;
 }
 
-// static 정적 메서드는 초기화 없이 바로 접근하여 사용 가능
-console.log(Department.createEmployee('TEST'));
-
-class ITDepartment extends Department {
-  admins: string[];
-  constructor(id: string, admins: string[]) {
-    super(id, 'IT');
-    this.admins = admins;
-  }
+interface Named {
+  readonly name?: string;
+  outputName?: string; // ?추가하여 선택사항 적용
 }
 
-class AccountingDepartment extends Department {
-  private lastReport : string;
+interface Greetable extends Named {
+  // 클래스와 달리 구체적 값이 아닌 구조만 존재
+  // 상속은 한 클래스로부터 가능하지만,
+  // 인터페이스는 쉼표를 구분지어 여러개의 인터페이스 가능
+  age?: number;
 
-  get mostRecentReport() {
-    if (this.lastReport) {
-      return this.lastReport;
+  greet(phrase: string) : void;
+}
+
+class Person implements Greetable {
+  name?: string;
+  age? : number;
+  constructor(n?: string, age?:number) {
+    if (n && age) {
+      this.name = n;
+      this.age = age;
+    } else {
+      console.log("hi?");
     }
-    throw new Error('No report found...')
   }
-
-  set mostRecentReport(value) {
-    if (!value) {
-      throw new Error('Please pass in a valid value');
-    }
-    this.addReport(value);
-  }
-
-  constructor(id: string, private reports: string[]) {
-    super(id, 'IT');
-    this.lastReport = reports[0];
-  }
-
-  addReport(text : string) {
-    this.reports.push(text);
-  }
-
-  printReports() {
-    console.log(this.reports);
+  greet(phrase: string) {
+    console.log(phrase + ' ' + this.name);
   }
 }
 
-const account = new AccountingDepartment('20230328',[]);
-account.addReport('Something went wrong...');
+// let user_1 : Greetable;
 
-account.printReports();
+// user_1 = {
+//   name: 'Minho',
+//   age: 33,
+//   greet(phrase: string) {
+//     console.log(phrase + ' ' + this.name);
+//   }
+// }
+// user_1.greet("Hi there - I'm ");
 
-const appliedMusic = new Department('2093512','applied Music');
-const it = new ITDepartment('20230327', ['Minho','YoungHoon']);
+let user_2:Person = new Person('Minho', 33);
 
-it.addEmployee('Minho');
-it.addEmployee('YoungHoon');
-it.describe();
-it.name = "NEW NAME";
-it.printEmployeeInformation();
-appliedMusic.addEmployee('Minho');
-appliedMusic.addEmployee('YoungHoon');
-appliedMusic.describe();
 
-//private 메서드는 직접 접근할 수 없다.
-// appliedMusic.addEmployee[2] = 'TEST'
-
-// 함수 자체를 전달하지 않으면, 정의된 this객체가 존재하지 않으므로 'undifined' 가 뜬다.
-// const appliedMusicCopy = { describe : appliedMusic.describe }
-// appliedMusicCopy.describe();
-
-// const appliedMusicCopy = { name:"DUMMY", describe : appliedMusic.describe }
-// appliedMusicCopy.describe();
+// readonly속성은 모든 객체의 속성이 한번만 설정되어야 하며, 이후는 읽기전용으로 설정
+// user_1.name = "YoungHoon"  'Error!'
+user_2.name = "YoungHoon"
