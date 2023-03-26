@@ -109,6 +109,7 @@
   "exclude": [
     "Section-02",
     "Section-03",
+    "Section-05",
     "adjusted-project",
     "first-project",
   ],

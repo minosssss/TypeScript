@@ -1,57 +1,124 @@
-// type Addfn = (a:number, b:number) => {}
-interface Addfn {
-  (a:number, b:number): number;
+type Admin = {
+  name: string;
+  privileges: string[]; //권한
+
+};
+
+type Employee = {
+  name: string;
+  startDate: Date;
 }
-let add: Addfn;
+// interface를 사용해도 괜찮다.
+type ElevatedEmpoyee = Admin & Employee;
 
-add = (n1: number, n2:number) => {
-  return n1 + n2;
-}
-
-interface Named {
-  readonly name?: string;
-  outputName?: string; // ?추가하여 선택사항 적용
-}
-
-interface Greetable extends Named {
-  // 클래스와 달리 구체적 값이 아닌 구조만 존재
-  // 상속은 한 클래스로부터 가능하지만,
-  // 인터페이스는 쉼표를 구분지어 여러개의 인터페이스 가능
-  age?: number;
-
-  greet(phrase: string) : void;
+const e1: ElevatedEmpoyee = {
+  name: 'Minho',
+  privileges: ['crreate-server'],
+  startDate: new Date()
 }
 
-class Person implements Greetable {
-  name?: string;
-  age? : number;
-  constructor(n?: string, age?:number) {
-    if (n && age) {
-      this.name = n;
-      this.age = age;
-    } else {
-      console.log("hi?");
-    }
+type Combinable = string | number;
+type Numeric = number | boolean;
+
+// 인터섹션 타입
+type Universal = Combinable & Numeric;
+
+function add(a: Combinable, b:Combinable) {
+  // return a + b; - Error 발생!
+  // 타입가드 적용
+  if (typeof a === 'string' || typeof b === 'string') {
+    return a.toString() + b.toString();
   }
-  greet(phrase: string) {
-    console.log(phrase + ' ' + this.name);
+  return a + b
+}
+
+type unknownEmployee = Employee | Admin;
+
+function printEmployeeInformation(emp: unknownEmployee) {
+  console.log('Name: ' + emp.name);
+  // console.log('Privileges: ' + emp.privileges)
+  // name속성은 두 개 모두 가지고 있지만, privileges속성은 admin에만 해당되기에 Error발생
+  // 타입가드 적용
+  if ('privileges' in emp) {
+    console.log('Privileges: ' + emp.privileges);
+  }
+  if ('startDate' in emp) {
+    console.log('startDate: ' + emp.startDate);
   }
 }
 
-// let user_1 : Greetable;
-
-// user_1 = {
-//   name: 'Minho',
-//   age: 33,
-//   greet(phrase: string) {
-//     console.log(phrase + ' ' + this.name);
-//   }
-// }
-// user_1.greet("Hi there - I'm ");
-
-let user_2:Person = new Person('Minho', 33);
+printEmployeeInformation(e1);
 
 
-// readonly속성은 모든 객체의 속성이 한번만 설정되어야 하며, 이후는 읽기전용으로 설정
-// user_1.name = "YoungHoon"  'Error!'
-user_2.name = "YoungHoon"
+class Car {
+  drive() {
+    console.log('Driving...');
+  }
+}
+
+class Truck {
+  drive() {
+    console.log('Driving a Truck....');
+  }
+
+  loadCargo(amount: number) {
+    console.log('Loading cargo...' + amount);
+  }
+}
+
+type Vehicle = Car|Truck;
+const v1 = new Car();
+const v2 = new Truck();
+
+function useVehicle(vehicle:Vehicle) {
+  vehicle.drive();
+  // if ('loadCargo' in vehicle) {
+  //   vehicle.loadCargo(10000);
+  // }
+  if (vehicle instanceof Truck) {
+    vehicle.loadCargo(1000);
+  }
+}
+
+useVehicle(v1);
+useVehicle(v2);
+
+
+// 구별된 유니언
+
+interface Bird {
+  type : 'Bird';
+  flyingSpeed: number;
+}
+
+interface Horse {
+  type : 'Horse';
+  groundSpeed: number;
+}
+
+type Animal = Bird | Horse;
+
+function moveAnimal(animal: Animal) {
+  let speed;
+  switch (animal.type) {
+    case 'Bird':
+      speed = animal.flyingSpeed;
+      break;
+    case 'Horse':
+      speed = animal.groundSpeed;
+      break;
+
+  }
+  console.log('Moving with spped: '+ speed);
+}
+
+// 형변환
+// 아래 2가지를 사용할 수 있다. (단, 일관성을 위해 프로젝트의 규칙을 따르자)
+// const userInputElem = <HTMLInputElement> document.getElementById('user-input');
+// const userInputElem = document.getElementById('user-input') as HTMLInputElement;
+// userInputElem.value = 'Hello World!'
+const userInputElem = document.getElementById('user-input');
+
+if (userInputElem) {
+  (userInputElem as HTMLInputElement).value = 'Hello World!';
+}
