@@ -112,6 +112,7 @@
     "Section-05",
     "adjusted-project",
     "first-project",
+    "challenge(w.nomad)"
   ],
   // "include": [
     // 지정하는 파일만 컴파일 대상으로 적용
